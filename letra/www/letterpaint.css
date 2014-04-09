@@ -39,15 +39,19 @@ canvas {
 }
 .gameword {
   display: block;
-  border-radius: 10px;
-  background: #ccc;
-  background: rgba(255,255,255,0.8);
+  /* border-radius: 10px; */
+  /* background: #ccc; */
+  /* background: rgba(255,255,255,0.8); */
   position: absolute;
-  padding: 10px;
-  top: 4px;
-  left: 10px;
-  font-size: 4vw;
+  /* padding: 10px; */
+  /* top: 4px; */
+  /* left: 10px; */
+  font-size: 6vw;
+  bottom: 20px;
+  text-align: center;
+  width: 100%;  
 }
+/*
 .cover {
   position: absolute;
   top: 80px;
@@ -85,6 +89,23 @@ canvas {
   z-index: 2;
   padding: 10px;
   font-size: 6vw;
+}
+*/
+.scorebutton {
+  position: absolute;
+  top: 5px;
+  display: block;
+  right: 75px;
+  line-height: 40px;
+  font-size: 30px;
+  border: none;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  background: #2c3e50;
+  color: #bdc3c7;
+  border-radius: 50% 50%;
+  transition: 0.5s;
 }
 .navbutton {
   position: absolute;
@@ -234,4 +255,41 @@ canvas {
     0% { opacity: 1.0; }
     50% { opacity: 0.0; }
     100% { opacity: 1.0; }
+}
+
+
+
+/* ooooooooo */
+
+.bubble 
+{
+  display: none;
+  position: relative;
+  padding: 0px;
+  background: #FFFFFF;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  top: 162px;
+  min-width: 200px;
+  right: 255px;
+  min-height: 170px;
+  background-color: rgba(255, 255, 255);
+  position: absolute;
+  padding: 10px;
+  text-align: center;
+}
+
+.bubble:after 
+{
+  content: '';
+  position: absolute;
+  border-style: solid;
+  border-width: 13px 0 13px 34px;
+  border-color: transparent #FFFFFF;
+  display: block;
+  width: 0;
+  z-index: 1;
+  right: -34px;
+  top: 131px;
 }

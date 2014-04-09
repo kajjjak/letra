@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html manifest="letterpaint.manifest" lang="en-US">
+<head>
+  <meta name="viewport" content="width=device-width">
+  <meta charset="UTF-8">
+  <title>letterpaint</title>
+  <link rel="stylesheet" type="text/css" href="letterpaint.css">
+  <script type="text/javascript" src="jquery.min.js"></script>
+</head>
+<body>
+  <div id="container" class="container" style="background-color:orange;">
+    <button id="score" class="scorebutton">S</button>
+    <div style="padding:100px;">
+    Hér er listi yfir þau orð sem þú 
+    <div id="words"></div>
+  </div>
+  </div>
+  <script>
+    var words = "";
+    var score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}}');
+    for (var i in score["words"]){
+      var word_score = score["words"][i];
+      words = "</p><b>" + i + " 80%</b> <i>count: " + word_score["count"] + " wins:" + word_score["wins"] +  " retries:" + word_score["retries"] + "</i></p>";
+    }
+    $("#words").html(words);
+    var scorebutton = document.querySelector('#score');
+    scorebutton.addEventListener('click', function(){
+      window.location.href="index.html";
+    }, false);
+  </script>
+</body>
+</html>

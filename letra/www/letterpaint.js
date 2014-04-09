@@ -1,22 +1,29 @@
+var game_data = {
+    "words":["fiskur", "mamma", "pabba", "akil"],
+    "alphabet":"AaÁáBbDdÐðEeÉéFfGgHhIiÍíJjKkLlMmNnOoÓóPpRrSsTtUuÚúVvXxYyÝýÞþÆæÖö"
+};
+
 (function(){
 
-    var color_blue = "#2c3e50"; /* 44, 62, 80 */
-    var color_red = "#F06050"; /* 240, 96, 80 */
-    var color_orange = "#EF9033"; /* 239, 144, 51 */
-    var color_yellow = "#F7CD1F";/* 247, 205, 31 */
-    var color_black = "#415C71"; /* 65, 92, 113 */
+  var color_blue = "#2c3e50"; /* 44, 62, 80 */
+  var color_red = "#F06050"; /* 240, 96, 80 */
+  var color_orange = "#EF9033"; /* 239, 144, 51 */
+  var color_yellow = "#F7CD1F";/* 247, 205, 31 */
+  var color_black = "#415C71"; /* 65, 92, 113 */
 
   /* Get container elements */
   var container = document.querySelector('#container');
 
   /* Get buttons */
-  var startbutton = document.querySelector('#intro button');
+  //var startbutton = document.querySelector('#intro button');
   var infobutton = document.querySelector('#infos');
   var installbutton = document.querySelector('#install');
-  var winbutton = document.querySelector('#win button');
-  var reloadbutton = document.querySelector('#reload');
+  var mainbutton = document.querySelector('#mainbutton');
+  //var winbutton = document.querySelector('#win button');
+  //var reloadbutton = document.querySelector('#reload');
   var soundbutton = document.querySelector('#sound');
-  var errorbutton = document.querySelector('#error button');
+  var scorebutton = document.querySelector('#score');
+  //var errorbutton = document.querySelector('#error button');
 
   /* Get sounds */
   var winsound = document.querySelector('#winsound');
@@ -49,10 +56,6 @@
   var sound = true;
   var currentstate;
   var charscontainer = "";
-  var game_data = {
-      "words":["Fiskur", "Mamma", "Pabba", "Goooglu"],
-      "alphabet":"AaÁáBbDdÐðEeÉéFfGgHhIiÍíJjKkLlMmNnOoÓóPpRrSsTtUuÚúVvXxYyÝýÞþÆæÖö"
-  };
 
   function showWord(){
     charscontainer = game_data["words"][wordindex].split("");
@@ -80,9 +83,20 @@
     }
   }
   
-  window.score = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
+  window.score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}}');
   function setScore(attr, value){
-    score[attr] = score[attr] + 1;
+    var word = charscontainer.join("");
+    console.info("Letter" + letter);
+    console.info("Word" + word);
+    if (!score["letters"][letter]){
+      score["letters"][letter] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
+    }
+    score["letters"][letter][attr] = score["letters"][letter][attr] + 1;
+    if (!score["words"][word]){
+      score["words"][word] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
+    }
+    score["words"][word][attr] = score["words"][word][attr] + 1;
+    localStorage.setItem("score", JSON.stringify(score));
   }
 
   function showerror() {
@@ -96,8 +110,31 @@
   }
   function setstate(newstate) {
     state = newstate;
-    container.className = newstate;
-    currentsate = state;
+    //container.className = newstate;
+    window.get_state = currentsate = state;
+    speak(newstate);
+  }
+
+  function eventmainbuttonhandler(){
+    if(currentsate == "intro"){start(); return;}
+    if(currentsate == "win"){winner(); return;}
+    if(currentsate == "error"){retry(); return;}
+    if(currentsate == "play"){cancel(); return;}
+  }
+
+  function speak(newstate){
+    if(newstate == "intro"){
+      say("Getur þú teiknað i stafina?");
+    }
+    if(newstate == "play"){
+      say();
+    }
+    if(newstate == "win"){
+      say("Vel gert!");
+    }
+    if(newstate == "error"){
+      say("Þú teiknaðir fyrir utan stafinn!");
+    }    
   }
   function moreneeded() {
     setstate('play');
@@ -114,6 +151,13 @@
     paintletter();
     setScore("wins");
   }
+  function say(msg){
+    if(msg){
+      $("#speak").html(msg).show();
+    }else{
+      $("#speak").hide();
+    }
+  }
   function start() {
     setScore("starts");
     paintletter(letter);
@@ -124,7 +168,7 @@
     
   }
   function completed(){
-      setScore("words")
+      setScore("words");
       showWord();
   }
   function getLetter(){
@@ -294,14 +338,20 @@
       ev.preventDefault();
     }
   }
+  function showWords(){
+    window.location.href = "list.html";
+  }
 
   /* Button event handlers */
 
-  errorbutton.addEventListener('click', retry, false);
-  reloadbutton.addEventListener('click', cancel, false);
+  //errorbutton.addEventListener('click', retry, false);
   soundbutton.addEventListener('click', togglesound, false);
-  winbutton.addEventListener('click', winner, false);
-  startbutton.addEventListener('click', start, false);
+  scorebutton.addEventListener('click', showWords, false);
+  //reloadbutton.addEventListener('click', cancel, false);
+  //winbutton.addEventListener('click', winner, false);
+  //startbutton.addEventListener('click', start, false);
+
+  mainbutton.addEventListener('click', eventmainbuttonhandler, false);
 
   /* Canvas event handlers */
 
@@ -325,4 +375,8 @@
   }
   cache.addEventListener('updateready', refresh, false);
 
+  window.run_cancel = cancel;
+  window.run_winner = winner;
+  window.run_start = start;
+  window.run_retry = retry;
 })();
