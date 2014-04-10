@@ -17,10 +17,10 @@
   </div>
   <script>
     var words = "";
-    var score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}}');
+    var score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}, "sentances":{}}');
     for (var i in score["words"]){
       var word_score = score["words"][i];
-      words = "</p><b>" + i + " 80%</b> <i>count: " + word_score["count"] + " wins:" + word_score["wins"] +  " retries:" + word_score["retries"] + "</i></p>";
+      words = words + "</p><b>" + i + " 80%</b> <i>count: " + word_score["count"] + " wins:" + word_score["wins"] +  " retries:" + word_score["retries"] + "</i>cancel:" + word_score["cancel"] + "</i></p>";
     }
     $("#words").html(words);
     var scorebutton = document.querySelector('#score');

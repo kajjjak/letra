@@ -1,6 +1,18 @@
 var game_data = {
-    "words":["fiskur", "mamma", "pabba", "akil"],
+    "sentence":game_data_sentance,
+    "words":game_data_words,
     "alphabet":"AaÁáBbDdÐðEeÉéFfGgHhIiÍíJjKkLlMmNnOoÓóPpRrSsTtUuÚúVvXxYyÝýÞþÆæÖö"
+};
+
+var characters = {
+  "A":{"lifts":3, "threshold":0.5},
+  "a":{"lifts":2, "threshold":0.5},
+  "Á":{"lifts":4, "threshold":0.55},
+  "f":{"lifts":2, "threshold":0.45},
+  "i":{"lifts":2, "threshold":0.45},
+  "Í":{"lifts":2, "threshold":0.45},
+  "í":{"lifts":2, "threshold":0.45},
+  "s":{"threshold":0.5}, "S":{"threshold":0.5}
 };
 
 (function(){
@@ -52,13 +64,16 @@ var game_data = {
   var oldy = 0;
 
   /* Overall game presets */
+  var draw_lift = 0;
   var state = 'intro';
   var sound = true;
   var currentstate;
   var charscontainer = "";
 
   function showWord(){
-    charscontainer = game_data["words"][wordindex].split("");
+    //charscontainer = game_data["words"][wordindex].split("");
+    draw_lift = 0;
+    charscontainer = game_data["sentence"][wordindex].split("");
     document.querySelector('#words').innerHTML = charscontainer;
     wordindex = wordindex + 1;
   }
@@ -83,7 +98,7 @@ var game_data = {
     }
   }
   
-  window.score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}}');
+  window.score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}, "sentances":{}}');
   function setScore(attr, value){
     var word = charscontainer.join("");
     console.info("Letter" + letter);
@@ -91,10 +106,14 @@ var game_data = {
     if (!score["letters"][letter]){
       score["letters"][letter] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
     }
-    score["letters"][letter][attr] = score["letters"][letter][attr] + 1;
     if (!score["words"][word]){
       score["words"][word] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
     }
+    if (!score["sentances"][word]){
+      score["sentances"][word] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
+    }
+    score["sentances"][word][attr] = score["sentances"][word][attr] + 1;
+    score["letters"][letter][attr] = score["letters"][letter][attr] + 1;
     score["words"][word][attr] = score["words"][word][attr] + 1;
     localStorage.setItem("score", JSON.stringify(score));
   }
@@ -108,11 +127,11 @@ var game_data = {
       navigator.vibrate(100);
     }
   }
-  function setstate(newstate) {
+  function setstate(newstate, detail) {
     state = newstate;
     //container.className = newstate;
     window.get_state = currentsate = state;
-    speak(newstate);
+    speak(newstate, detail);
   }
 
   function eventmainbuttonhandler(){
@@ -122,7 +141,7 @@ var game_data = {
     if(currentsate == "play"){cancel(); return;}
   }
 
-  function speak(newstate){
+  function speak(newstate, detail){
     if(newstate == "intro"){
       say("Getur þú teiknað i stafina?");
     }
@@ -133,7 +152,11 @@ var game_data = {
       say("Vel gert!");
     }
     if(newstate == "error"){
-      say("Þú teiknaðir fyrir utan stafinn!");
+      if (detail == "lifts"){
+        say("Þú ættir að búa til fleira linur!");
+      }else{
+        say("Þú teiknaðir fyrir utan stafinn!");
+      }
     }    
   }
   function moreneeded() {
@@ -284,17 +307,36 @@ var game_data = {
 
   function pixelthreshold() {
     if (state !== 'error') {
+      var pixel_amount = 0.35;
+      var draw_lifts = 0;
+      if (characters[letter]){
+        if(characters[letter]["threshold"]){
+          pixel_amount = characters[letter]["threshold"];
+        }
+        if(characters[letter]["lifts"]){
+          draw_lifts = characters[letter]["lifts"];
+        }
+      }
       if (getpixelamount(
         paintcolour[0],
         paintcolour[1],
         paintcolour[2]
-      ) / letterpixels > 0.35) {
-       setstate('win');
-       if (sound) {
-         winsound.play();
-       }
+      ) / letterpixels > pixel_amount) {
+        if ((draw_lift+1) < draw_lifts){
+          setstate('error', 'lifts');
+        }else{
+          setstate('win');
+          if (sound) {
+            winsound.play();
+          }
+        }
       }
     }
+  }
+
+  function addDraws(){
+    draw_lift = draw_lift + 1;
+    console.info("Draws" + draw_lift);
   }
 
   /* Mouse event listeners */
@@ -305,6 +347,7 @@ var game_data = {
     oldy = 0;
     mousedown = false;
     pixelthreshold();
+    addDraws();
   }
   function onmousedown(ev) {
     ev.preventDefault();
@@ -324,6 +367,7 @@ var game_data = {
     touched = true;
   }
   function ontouchend(ev) {
+    addDraws();
     touched = false;
     oldx = 0;
     oldy = 0;
@@ -379,4 +423,5 @@ var game_data = {
   window.run_winner = winner;
   window.run_start = start;
   window.run_retry = retry;
+  window.get_draws = draw_lift;
 })();
