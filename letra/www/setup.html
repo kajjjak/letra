@@ -1,0 +1,91 @@
+
+<!DOCTYPE HTML>
+<html manifest="letterpaint.manifest" lang="en-US">
+<head>
+  <meta name="viewport" content="width=device-width">
+  <meta charset="UTF-8">
+  <title>letterpaint</title>
+  <link rel="stylesheet" type="text/css" href="letterpaint.css">
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="letterdata.js"></script>
+  <script type="text/javascript" src="common.js"></script>
+  <style type="text/css">
+    .general_body {
+      font-family: 'Lato', times, arial, sans-serif;
+      font-size: 55px;
+      font-weight: 800;
+    }
+
+
+    input[type=radio].css-checkbox {
+      display:none;
+    }
+
+    input[type=radio].css-checkbox + label.css-label {
+      padding-left:41px;
+      height:36px; 
+      display:inline-block;
+      line-height:36px;
+      background-repeat:no-repeat;
+      background-position: 0 0;
+      font-size:36px;
+      vertical-align:middle;
+      cursor:pointer;
+    }
+
+    input[type=radio].css-checkbox:checked + label.css-label {
+      background-position: 0 -36px;
+    }
+    label.css-label {
+      background-image:url(images/csscheckbox_radiobutton.png);
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }    
+  </style>
+</head>
+<body>
+  <div id="container" class="container general_body">
+    <img id="top_menu" src="images/Menubar_Easy.gif" width="100%"/>
+    <img id="home" class="homebutton" src="images/Menu.png"/>
+    <img id="score" class="scorebutton" src="images/Trophie.png"/>
+    <img id="sound" class="soundbutton" src="images/Hljod-ON.png"/>
+    <img id="setup" class="setupbutton blink_me" src="images/Stillingar.png"/>
+    <br><br>
+    <div style="width:100%;text-align:center;">
+      Stillingar
+    </div>
+    <div style="padding:50px;width:100%;">
+      <input class="css-checkbox" type="radio" name="level" id="radio_numbers" value="numbers" onclick="changeLevel();"><label for="radio_numbers" class="css-label">Tölur</label><br>
+      <input class="css-checkbox" type="radio" name="level" id="radio_alphabet" value="alphabet" onclick="changeLevel();"><label for="radio_alphabet" class="css-label">Stafir</label><br>
+      <input class="css-checkbox" type="radio" name="level" id="radio_words" value="words" onclick="changeLevel();"><label for="radio_words" class="css-label">Orð</label><br>
+      <input class="css-checkbox" type="radio" name="level" id="radio_sentence" value="sentence" onclick="changeLevel();"><label for="radio_sentence" class="css-label">Settningar</label><br>
+    </div>
+  </div>
+  <script>
+    
+    function changeLevel(){
+      var sel = $('input[type="radio"]:checked').val();
+      if (!sel) {
+        sel = getSetup("level");
+        $("#radio_"+sel).attr("checked", "checked");
+      }else{
+        setSetup("level", sel);
+      }
+    }
+    changeLevel();
+
+    var scorebutton = document.querySelector('#score');
+    var setupbutton = document.querySelector('#setup');
+    var homebutton = document.querySelector('#home');
+    homebutton.addEventListener('click', function(){window.location.href = "index.html";}, false);
+    scorebutton.addEventListener('click', function(){window.location.href = "list.html";}, false);
+    setupbutton.addEventListener('click', function(){window.location.href = "index.html";}, false);
+
+
+  </script>
+</body>
+</html>

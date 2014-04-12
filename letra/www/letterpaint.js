@@ -1,11 +1,13 @@
 var game_data = {
+    "test":game_data_test,
     "sentence":game_data_sentance,
     "words":game_data_words,
-    "alphabet":"AaÁáBbDdÐðEeÉéFfGgHhIiÍíJjKkLlMmNnOoÓóPpRrSsTtUuÚúVvXxYyÝýÞþÆæÖö"
+    "alphabet": game_data_alphabet,
+    "numbers": game_data_numbers
 };
 
 var characters = {
-  "A":{"lifts":3, "threshold":0.5},
+  "A":{"lifts":3, "threshold":0.9},
   "a":{"lifts":2, "threshold":0.5},
   "Á":{"lifts":4, "threshold":0.55},
   "f":{"lifts":2, "threshold":0.45},
@@ -18,7 +20,7 @@ var characters = {
 (function(){
 
   var color_blue = "#2c3e50"; /* 44, 62, 80 */
-  var color_red = "#F06050"; /* 240, 96, 80 */
+  var color_red = "#FA4252"; /* 240, 96, 80 */
   var color_orange = "#EF9033"; /* 239, 144, 51 */
   var color_yellow = "#F7CD1F";/* 247, 205, 31 */
   var color_black = "#415C71"; /* 65, 92, 113 */
@@ -30,11 +32,11 @@ var characters = {
   //var startbutton = document.querySelector('#intro button');
   var infobutton = document.querySelector('#infos');
   var installbutton = document.querySelector('#install');
-  var mainbutton = document.querySelector('#mainbutton');
+  var mainbutton = document.querySelector('.mainbutton');
+  var characterbutton = document.querySelector('#character');
   //var winbutton = document.querySelector('#win button');
   //var reloadbutton = document.querySelector('#reload');
-  var soundbutton = document.querySelector('#sound');
-  var scorebutton = document.querySelector('#score');
+
   //var errorbutton = document.querySelector('#error button');
 
   /* Get sounds */
@@ -47,10 +49,10 @@ var characters = {
   var letter = null;
   var fontsize = 300;
   var paintcolour = [65, 92, 113]; //black
-  var textcolour = [240, 96, 80];  //red
+  var textcolour = [249, 66, 82];  //red
   var xoffset = 0;
   var yoffset = 0;
-  var linewidth = 20;
+  var linewidth = 10;//20
   var pixels = 0;
   var letterpixels = 0;
   var letterindex = -1;
@@ -62,18 +64,26 @@ var characters = {
   var touched = false;
   var oldx = 0;
   var oldy = 0;
+  var offset_delta_y = 0;
 
   /* Overall game presets */
   var draw_lift = 0;
   var state = 'intro';
-  var sound = true;
+  var sound = getSetup("sound");
+  var level = getSetup("level");
   var currentstate;
   var charscontainer = "";
 
+  if(level == "sentance"){
+    $("#words").css("font-size", "60px");
+  }else{
+    $("#words").css("font-size", "90px");
+  }
+
   function showWord(){
-    //charscontainer = game_data["words"][wordindex].split("");
     draw_lift = 0;
-    charscontainer = game_data["sentence"][wordindex].split("");
+    if(!game_data[level][wordindex]){ wordindex = 0; }
+    charscontainer = game_data[level][wordindex].split("");
     document.querySelector('#words').innerHTML = charscontainer;
     wordindex = wordindex + 1;
   }
@@ -83,41 +93,10 @@ var characters = {
     xoffset = container.offsetLeft;
     yoffset = container.offsetTop;
     fontsize = container.offsetHeight / 1.5;
-    linewidth = container.offsetHeight / 19;
+    linewidth = container.offsetHeight / 25; //19, 20
     paintletter();
     setstate('intro');
   }
-
-  function togglesound() {
-    if (sound) {
-      sound = false;
-      soundbutton.className = 'navbuttonoff';
-    } else {
-      sound = true;
-      soundbutton.className = 'navbutton';
-    }
-  }
-  
-  window.score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}, "sentances":{}}');
-  function setScore(attr, value){
-    var word = charscontainer.join("");
-    console.info("Letter" + letter);
-    console.info("Word" + word);
-    if (!score["letters"][letter]){
-      score["letters"][letter] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
-    }
-    if (!score["words"][word]){
-      score["words"][word] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
-    }
-    if (!score["sentances"][word]){
-      score["sentances"][word] = {"retries": 0, "wins": 0, "cancel":0, "unique":0, "count":0};
-    }
-    score["sentances"][word][attr] = score["sentances"][word][attr] + 1;
-    score["letters"][letter][attr] = score["letters"][letter][attr] + 1;
-    score["words"][word][attr] = score["words"][word][attr] + 1;
-    localStorage.setItem("score", JSON.stringify(score));
-  }
-
   function showerror() {
     setstate('error');
     if (sound) {
@@ -141,21 +120,35 @@ var characters = {
     if(currentsate == "play"){cancel(); return;}
   }
 
+  window.score = JSON.parse(localStorage.getItem("score") || '{}');
+  function setScore(attr, value){
+    var word = charscontainer.join("");
+    if (!score[level]){ score[level] = {}; }
+    if (!score[level][word]){score[level][word] = {};}
+    if (!score[level][word][attr]){score[level][word][attr] = 0;}
+    score[level][word][attr] = score[level][word][attr] + 1;
+    localStorage.setItem("score", JSON.stringify(score));
+  }
+
   function speak(newstate, detail){
     if(newstate == "intro"){
-      say("Getur þú teiknað i stafina?");
+      $("#character").html('<img src="images/Letra_kall_2.png" width="100%">').show();
+      $("#character").show();
     }
     if(newstate == "play"){
-      say();
+      $("#character").html("");
+      $("#character").hide();
     }
     if(newstate == "win"){
-      say("Vel gert!");
+      //say("Vel gert!");
+      $("#character").html('<img src="images/Velgert.gif" width="100%">').show();
     }
     if(newstate == "error"){
+      $("#character").html('<img src="images/Letra_kall_1.png" width="100%">').show();
       if (detail == "lifts"){
-        say("Þú ættir að búa til fleira linur!");
+        //say("Þú ættir að búa til fleira linur!");
       }else{
-        say("Þú teiknaðir fyrir utan stafinn!");
+        //say("Þú teiknaðir fyrir utan stafinn!");
       }
     }    
   }
@@ -207,6 +200,16 @@ var characters = {
     }else{ 
         letterindex = parseInt(Math.random() * chars.length,10); 
     }
+    offset_delta_y = 0;
+    chars_letterindex = chars[letterindex];
+    if((chars_letterindex == "g") || (chars_letterindex == "j") || (chars_letterindex == "p") || (chars_letterindex == "y") || (chars_letterindex == "ý") || (chars_letterindex == "þ")){
+      offset_delta_y = 130;
+    }
+    if(chars[letterindex] == " "){
+      if(chars.length > letterindex){
+        return getLetter();
+      }
+    }
     return chars[letterindex];
   }
   function paintletter(retryletter) {
@@ -215,7 +218,7 @@ var characters = {
     if(!letterdrawn[letter]){letterdrawn[letter] = true;}
     c.width = container.offsetWidth;
     c.height = container.offsetHeight;
-    cx.font = 'bold ' + fontsize + 'px Open Sans';
+    cx.font = 'bold ' + fontsize + 'px Delius';
     cx.fillStyle = 'rgb(' + textcolour.join(',') + ')';
     cx.strokeStyle = 'rgb(' + paintcolour.join(',') + ')';
     cx.shadowOffsetX = 0;
@@ -229,7 +232,7 @@ var characters = {
     cx.fillText(
       letter,
       (c.width - cx.measureText(letter).width) / 2,
-      (c.height / 1.3)
+      (c.height / 1.3)-offset_delta_y
     );
     pixels = cx.getImageData(0, 0, c.width, c.height);
     letterpixels = getpixelamount(
@@ -253,7 +256,7 @@ var characters = {
             charsdisplayed = charsdisplayed + "<b class='blink_me'>" + chars[i] + "</b>";
         }else{
             if(letterdrawn[chars[i]]){
-                charsdisplayed = charsdisplayed + "<i>" + chars[i] + "</i>";
+                charsdisplayed = charsdisplayed + "<b>" + chars[i] + "</b>";
             }else{
                 charsdisplayed = charsdisplayed + "<b>" + chars[i] + "</b>";
             }
@@ -307,7 +310,7 @@ var characters = {
 
   function pixelthreshold() {
     if (state !== 'error') {
-      var pixel_amount = 0.35;
+      var pixel_amount = 0.80;
       var draw_lifts = 0;
       if (characters[letter]){
         if(characters[letter]["threshold"]){
@@ -317,11 +320,13 @@ var characters = {
           draw_lifts = characters[letter]["lifts"];
         }
       }
-      if (getpixelamount(
+      var pixel_percentage = getpixelamount(
         paintcolour[0],
         paintcolour[1],
         paintcolour[2]
-      ) / letterpixels > pixel_amount) {
+      ) / letterpixels;
+      console.info("Pixel " + pixel_percentage);
+      if (pixel_percentage > pixel_amount) {
         if ((draw_lift+1) < draw_lifts){
           setstate('error', 'lifts');
         }else{
@@ -382,20 +387,17 @@ var characters = {
       ev.preventDefault();
     }
   }
-  function showWords(){
-    window.location.href = "list.html";
-  }
 
   /* Button event handlers */
-
-  //errorbutton.addEventListener('click', retry, false);
-  soundbutton.addEventListener('click', togglesound, false);
-  scorebutton.addEventListener('click', showWords, false);
-  //reloadbutton.addEventListener('click', cancel, false);
-  //winbutton.addEventListener('click', winner, false);
-  //startbutton.addEventListener('click', start, false);
+  var scorebutton = document.querySelector('#score');
+  var setupbutton = document.querySelector('#setup');
+  var homebutton = document.querySelector('#home');
+  homebutton.addEventListener('click', function(){window.location.href = "index.html";}, false);
+  scorebutton.addEventListener('click', function(){window.location.href = "list.html";}, false);
+  setupbutton.addEventListener('click', function(){window.location.href = "setup.html";}, false);
 
   mainbutton.addEventListener('click', eventmainbuttonhandler, false);
+  characterbutton.addEventListener('click', eventmainbuttonhandler, false);
 
   /* Canvas event handlers */
 

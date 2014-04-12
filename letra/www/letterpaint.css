@@ -1,14 +1,14 @@
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Lato';
   font-style: normal;
   font-weight: 400;
-  src: local('Open Sans'), local('OpenSans'), url(opensans.ttf) format('truetype');
+  src: local('Lato'), local('Lato'), url(Lato-Regular.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Delius';
   font-style: normal;
   font-weight: 700;
-  src: local('Open Sans Bold'), local('OpenSans-Bold'), url(opensans-bold.ttf) format('truetype');
+  src: local('Delius'), local('Delius'), url(Delius-Regular.ttf) format('truetype');
 }
 
 body, html {
@@ -18,10 +18,10 @@ body, html {
   color: #000;
   margin: 0;
   padding: 0;
-  font-family: 'Open Sans', times, arial, sans-serif;
+  font-family: 'Delius', times, arial, sans-serif;
 }
 #top_menu {
-  top:-20px;
+  top:0px;
   position: absolute;
 }
 .container {
@@ -43,121 +43,70 @@ canvas {
 }
 .gameword {
   display: block;
-  /* border-radius: 10px; */
-  /* background: #ccc; */
-  /* background: rgba(255,255,255,0.8); */
   position: absolute;
-  /* padding: 10px; */
-  /* top: 4px; */
-  /* left: 10px; */
-  font-size: 6vw;
   bottom: 20px;
   text-align: center;
   width: 100%;  
+  font-family: 'Lato', times, arial, sans-serif;
+  color: #3A3A3A;
+  white-space: nowrap;
 }
-/*
-.cover {
+#mainbutton {
+  z-index: 59;
+}
+#character {
+  z-index: 500;
   position: absolute;
-  top: 80px;
-  left: 10px;
-  right: 10px;
-  bottom: 20px;
-  z-index: 2;
-  border-radius: 10px;
-  background: #ccc;
-  background: rgba(255,255,255,0.8);
-  transition: transform 0.5s;
-  -webkit-transform: translate(-120%,0);
-  transform: translate(-120%,0);
-} 
-
-.info #info {
-  -webkit-transform: translate(0, 0);
-  transform: translate(0, 0);
+  bottom: -4px;
+  right: 0px;
+  display: block;
+  width: 100%;
 }
-
-.win #win {
-  -webkit-transform: translate(0, 0);
-  transform: translate(0, 0);
+.homebutton {
+  z-index: 520;
+  position: absolute;
+  top: 20px;
+  display: block;
+  left: 20px;
+  height: 26px;
 }
-.error #error {
-  -webkit-transform: translate(0, 0);
-  transform: translate(0, 0);
-}
-.intro #intro {
-  -webkit-transform: translate(0, 0);
-  transform: translate(0, 0);
-}
-.cover p {
-  text-align: center;
-  z-index: 2;
-  padding: 10px;
-  font-size: 6vw;
-}
-*/
 .scorebutton {
+  z-index: 520;
   position: absolute;
-  top: 5px;
+  top: 20px;
   display: block;
-  right: 75px;
-  line-height: 40px;
-  font-size: 30px;
-  border: none;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  background: #2c3e50;
-  color: #bdc3c7;
-  border-radius: 50% 50%;
-  transition: 0.5s;
+  right: 152px;
+  height: 26px;
 }
-.navbutton {
+.soundbutton {
+  z-index: 520;
   position: absolute;
-  top: 5px;
+  top: 20px;
   display: block;
-  right: 5px;
-  line-height: 40px;
-  font-size: 30px;
-  border: none;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  background: #2c3e50;
-  color: #bdc3c7;
-  border-radius: 50% 50%;
-  transition: 0.5s;
+  right: 72px;
+  height: 26px;
 }
-.navbuttonoff {
+.setupbutton {
+  z-index: 520;
   position: absolute;
-  top: 5px;
+  top: 20px;
   display: block;
-  right: 5px;
-  line-height: 40px;
-  font-size: 30px;
-  border: none;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  background: #666;
-  color: #ccc;
-  border-radius: 50% 50%;
-  transition: 0.5s;
+  right: 22px;
+  height: 26px;
 }
 .actionbutton {
-  position: absolute;
-  bottom: 20px;
-  display: block;
-  right: 20px;
-  line-height: 60px;
-  font-size: 50px;
-  border: none;
-  width: 60px;
-  height: 60px;
-  text-align: center;
-  background: #2c3e50;
-  color: #bdc3c7;
+  z-index: 200;
+  position: relative;
+  height: 52px;
   border-radius: 50% 50%;
-  transition: 0.5s;
+}
+.center_actionbutton{
+  position: relative;
+  bottom: 175px;
+  text-align: center;
+  vertical-align: middle;
+  width: 100%;
+  /* align-content: center; */
 }
 .inlinebutton {
   float: right;
@@ -233,14 +182,16 @@ canvas {
 
 .blink_me {
     animation-name: blinker;
-    animation-duration: 1s;
+    animation-duration: 1.6s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
 
     -webkit-animation-name: blinker;
-    -webkit-animation-duration: 1s;
+    -webkit-animation-duration: 1.6s;
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite;
+    font-family: 'Lato', times, arial, sans-serif;
+    color: "#3A3A3A";
 }
 
 @-moz-keyframes blinker {  /* Decimal not necessary, 0 and 1 is enough */
@@ -261,39 +212,3 @@ canvas {
     100% { opacity: 1.0; }
 }
 
-
-
-/* ooooooooo */
-
-.bubble 
-{
-  display: none;
-  position: relative;
-  padding: 0px;
-  background: #FFFFFF;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  top: 162px;
-  min-width: 200px;
-  right: 255px;
-  min-height: 170px;
-  background-color: rgba(255, 255, 255);
-  position: absolute;
-  padding: 10px;
-  text-align: center;
-}
-
-.bubble:after 
-{
-  content: '';
-  position: absolute;
-  border-style: solid;
-  border-width: 13px 0 13px 34px;
-  border-color: transparent #FFFFFF;
-  display: block;
-  width: 0;
-  z-index: 1;
-  right: -34px;
-  top: 131px;
-}

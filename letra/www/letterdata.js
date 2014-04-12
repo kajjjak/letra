@@ -1,3 +1,9 @@
+game_data_test = ["F", "g", "Vegasalt", "Það er gaman að blása á fíflana", "æ", "Á", "á", "Í", "í", "þ", "Þ", "ö", "Ó", "É", ]
+
+game_data_numbers = "1234567890";
+
+game_data_alphabet = "AaÁáBbDdÐðEeÉéFfGgHhIiÍíJjKkLlMmNnOoÓóPpRrSsTtUuÚúVvXxYyÝýÞþÆæÖö";
+
 game_data_words = [
   "Æði",
   "Ær",

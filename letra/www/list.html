@@ -1,3 +1,4 @@
+
 <!DOCTYPE HTML>
 <html manifest="letterpaint.manifest" lang="en-US">
 <head>
@@ -6,27 +7,68 @@
   <title>letterpaint</title>
   <link rel="stylesheet" type="text/css" href="letterpaint.css">
   <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="letterdata.js"></script>
+  <script type="text/javascript" src="common.js"></script>
+  <style type="text/css">
+    .general_body {
+      font-family: 'Lato', times, arial, sans-serif;
+      font-size: 20px;
+    }
+    .score_item {
+      display: inline-block;
+      padding: 10px;
+      margin: 2px;
+    }
+  </style>
 </head>
 <body>
-  <div id="container" class="container" style="background-color:orange;">
-    <button id="score" class="scorebutton">S</button>
-    <div style="padding:100px;">
-    Hér er listi yfir þau orð sem þú 
-    <div id="words"></div>
-  </div>
+  <div id="container" class="container general_body">
+    <img id="top_menu" src="images/Menubar_Easy.gif" width="100%"/>
+    <img id="home" class="homebutton" src="images/Menu.png"/>
+    <img id="score" class="scorebutton blink_me" src="images/Trophie.png"/>
+    <img id="sound" class="soundbutton" src="images/Hljod-ON.png"/>
+    <img id="setup" class="setupbutton" src="images/Stillingar.png"/>
+    <br><br><br><br>
+    <div style="width:100%;text-align:center;font-size:55px;">
+      Top listi
+    </div>
+    <div style="padding:0px;margin:0px;width:100%;">
+      <div id="words"></div>
+    </div>    
   </div>
   <script>
     var words = "";
-    var score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}, "sentances":{}}');
-    for (var i in score["words"]){
-      var word_score = score["words"][i];
-      words = words + "</p><b>" + i + " 80%</b> <i>count: " + word_score["count"] + " wins:" + word_score["wins"] +  " retries:" + word_score["retries"] + "</i>cancel:" + word_score["cancel"] + "</i></p>";
+    var score = JSON.parse(localStorage.getItem("score") || '{"letters":{}, "words":{}, "sentances":{}, "numbers":{}}');
+    var level = getSetup("level");
+    var style_default = "#FFF8E9;";
+    var style_good = "#2ab688; color:white;";
+    var style_bad = "#FA4252; color:white;";
+    var style_selected = style_default;
+    for (var i in score[level]){
+      var style_selected = style_default;
+      var word_score = score[level][i];
+      var total = ((word_score["wins"] || 0) + (word_score["retries"] || 0));
+      var wins = (word_score["wins"] || 0);
+      var item_score = parseInt((wins/total)*100);
+      if (!isNaN(item_score)){
+        if (item_score < 0.8){ style_selected = style_bad; }else{ style_selected = style_good;  }
+      }
+      words = words + "<div id='"+i+"' class='score_item' style='background-color:"+style_selected+"' onclick='debugScore(this)'>" + i + "</div>";
     }
     $("#words").html(words);
+
     var scorebutton = document.querySelector('#score');
-    scorebutton.addEventListener('click', function(){
-      window.location.href="index.html";
-    }, false);
+    var setupbutton = document.querySelector('#setup');
+    var homebutton = document.querySelector('#home');
+    homebutton.addEventListener('click', function(){window.location.href = "index.html";}, false);
+    scorebutton.addEventListener('click', function(){window.location.href = "index.html";}, false);
+    setupbutton.addEventListener('click', function(){window.location.href = "setup.html";}, false);
+
+    function debugScore (self){
+      var i = self.id;
+      var x = score[level][i];
+      console.info(JSON.stringify(x));
+    }
   </script>
 </body>
 </html>
